@@ -4,23 +4,28 @@ This roadmap guides you from zero to a working, publishable version of **Quick F
 
 ---
 
-## 0. Prerequisites & Project Setup
+## 0. Prerequisites & Project Setup ✅ **COMPLETED**
 
-- **Install tools**
+- **Install tools** ✅
   - Android Studio (latest stable) with Kotlin support.
   - Java 17 (or version recommended by latest Android Studio).
-- **Create project**
+- **Create project** ✅
   - New Project → Empty Activity.
   - Language: Kotlin.
   - Min SDK: 26 or 28 (balance between market share and features).
-  - Package name consistent with app name (e.g., `com.yourname.quickflipactions`).
-- **Configure version control**
+  - Package name consistent with app name (`com.praise.quickflipactions`).
+- **Configure version control** ✅
   - Initialize Git repo (if not already).
   - Commit initial Android Studio project.
-- **High-level modules (conceptual)**
+- **High-level modules (conceptual)** ✅
   - `core-sensors`: sensor reading and gesture detection.
   - `core-actions`: definition and execution of actions (notes, audio, camera, etc.).
   - `app-ui`: configuration screens, onboarding, permissions.
+
+**Additional Completed:**
+- ✅ Custom app icon designed and implemented
+- ✅ App successfully running on Pixel 7 device
+- ✅ Basic project structure with MainActivity
 
 ---
 
