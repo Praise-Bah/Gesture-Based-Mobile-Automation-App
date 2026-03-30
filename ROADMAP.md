@@ -33,14 +33,20 @@ This roadmap guides you from zero to a working, publishable version of **Quick F
 
 - **Clarify functional scope (MVP)**
   - Support gestures:
-    - Face-up → Face-down.
-    - Face-down → Face-up.
-    - (Optional MVP) A basic double-tap on screen to deactivate.
+    - Face-up → Face-down **(start current action)**.
+    - Face-down → Face-up **(stop current action and disable gesture detection)**.
+    - (Optional MVP) A basic double-tap on screen to deactivate (can be added later).
+  - Behavior:
+    - User selects **one active quick action** in the app (e.g., flashlight, silent mode, launch app).
+    - After leaving the app / turning the screen off:
+      - A **single face-down** gesture starts the selected action.
+      - A **single face-up** gesture stops/reverts that action and **turns off gesture detection** until the user arms it again.
   - Support actions:
     - Silent/normal mode toggle.
     - Flashlight on/off.
     - Launch a specific app.
-  - Basic mapping UI: user selects gesture → selects one action.
+    - (Later) Voice memo recording, timers, camera, location/SOS, etc.
+  - Basic configuration UI: user selects **one active action at a time** which is controlled by the face-down / face-up pair.
 - **Non-functional requirements**
   - Run efficiently in background.
   - Minimize battery usage.
@@ -131,7 +137,11 @@ Test flip detection thoroughly with emulator & real device.
 - **Implement service**
   - Start/stop from UI (toggle on home screen).
   - Service holds `SensorController` + `GestureDetector`.
-  - On gesture detected → delegate to `ActionExecutor`.
+  - Maintain a simple **session state machine**:
+    - `IDLE` → no action armed, service stopped.
+    - `ARMED` → one action selected, waiting for face-down.
+    - `ACTION_ACTIVE` → action running after face-down, waiting for face-up.
+  - On gesture detected → consult session state and delegate to `ActionExecutor` accordingly.
 - **Handle battery optimization**
   - Detect if app is battery-optimized and show instructions to user to exclude app if needed.
 - **Test lifecycle scenarios**
@@ -148,16 +158,18 @@ Test flip detection thoroughly with emulator & real device.
   - Toggle silent/normal mode.
   - Flashlight on/off.
   - Launch specific app by package name.
-- **Add simple configuration UI**
+ - **Add simple configuration UI (single active action)**
   - Screen where user:
-    - Picks a gesture from list (face-up→face-down, face-down→face-up).
-    - Chooses an action from list.
-    - For `LAUNCH_APP`, opens an app picker.
-- **Persist mappings**
+    - Chooses **one active action** from a list (flashlight, silent mode, launch app, etc.).
+    - Arms that action so that:
+      - Face-up → Face-down starts the action.
+      - Face-down → Face-up stops/reverts the action and disables gesture detection.
+    - For `LAUNCH_APP`, opens an app picker to select target app.
+ - **Persist selected action**
   - Use `DataStore` or SharedPreferences as a first step.
-  - Store `GestureActionMapping` list and load at service startup.
+  - Store the currently selected `ActionType` and any parameters (e.g., package name) and reload them when app starts.
 
-Goal: **You can flip the phone and see a real action (e.g., flashlight) happening.**
+Goal: **You can arm one action, lock your phone, flip face-down to run it, then face-up to stop it and turn off detection.**
 
 ---
 
