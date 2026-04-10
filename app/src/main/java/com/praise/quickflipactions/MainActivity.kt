@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.praise.quickflipactions.core.actions.ActionType
 import com.praise.quickflipactions.service.GestureService
+import com.praise.quickflipactions.ui.SosSettingsActivity
 
 class MainActivity : AppCompatActivity() {
     
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var actionGroup: RadioGroup
     private lateinit var flashlightRadio: RadioButton
     private lateinit var silentRadio: RadioButton
+    private lateinit var sosSettingsButton: Button
     
     private var isServiceRunning = false
     private var selectedActionType: ActionType = ActionType.TOGGLE_FLASHLIGHT
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         actionGroup = findViewById(R.id.actionGroup)
         flashlightRadio = findViewById(R.id.actionFlashlight)
         silentRadio = findViewById(R.id.actionSilent)
+        sosSettingsButton = findViewById(R.id.buttonSosSettings)
 
         // Set default selection
         flashlightRadio.isChecked = true
@@ -59,6 +62,11 @@ class MainActivity : AppCompatActivity() {
         
         stopButton.setOnClickListener {
             stopGestureDetection()
+        }
+
+        sosSettingsButton.setOnClickListener {
+            val intent = Intent(this, SosSettingsActivity::class.java)
+            startActivity(intent)
         }
     }
     

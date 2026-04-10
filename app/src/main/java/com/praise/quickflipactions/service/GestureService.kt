@@ -13,9 +13,13 @@ import com.praise.quickflipactions.R
 import com.praise.quickflipactions.core.actions.ActionExecutor
 import com.praise.quickflipactions.core.actions.ActionType
 import com.praise.quickflipactions.core.models.GestureActionMapping
+import com.praise.quickflipactions.core.models.SosConfig
+import com.praise.quickflipactions.core.safety.SosManager
+import com.praise.quickflipactions.core.safety.SosPreferences
 import com.praise.quickflipactions.core.sensors.GestureDetector
 import com.praise.quickflipactions.core.sensors.GestureType
 import com.praise.quickflipactions.core.sensors.SensorController
+import com.praise.quickflipactions.core.sensors.ShakeDetector
 
 /**
  * Foreground service that handles gesture detection and action execution
@@ -43,6 +47,9 @@ class GestureService : Service() {
     private var sensorController: SensorController? = null
     private var gestureDetector: GestureDetector? = null
     private var actionExecutor: ActionExecutor? = null
+    private var shakeDetector: ShakeDetector? = null
+    private var sosManager: SosManager? = null
+    private var sosPreferences: SosPreferences? = null
     
     // TODO: In future, this will be loaded from DataStore/SharedPreferences
     private val currentMappings = mutableListOf<GestureActionMapping>()
@@ -61,15 +68,25 @@ class GestureService : Service() {
         sensorController = SensorController(this)
         gestureDetector = GestureDetector()
         actionExecutor = ActionExecutor(this)
+        shakeDetector = ShakeDetector()
+        sosManager = SosManager(this)
+        sosPreferences = SosPreferences(this)
         
         // Setup gesture detection callback
         gestureDetector?.setGestureCallback { gesture ->
             handleGestureDetected(gesture)
         }
+
+        // Setup SOS long-shake callback
+        shakeDetector?.setOnLongShakeListener {
+            Log.d(TAG, "Long shake detected, checking SOS config")
+            handleLongShakeForSos()
+        }
         
         // Setup sensor data callback
         sensorController?.setSensorDataCallback { accelerometer, gyroscope ->
             gestureDetector?.processSensorData(accelerometer, gyroscope)
+            shakeDetector?.onAccelerometerData(accelerometer)
         }
         
         // Initialize sensor controller
@@ -143,6 +160,19 @@ class GestureService : Service() {
     private fun handleGestureDetected(gesture: GestureType) {
         Log.d(TAG, "Gesture detected: $gesture, sessionState=$sessionState, armedActionType=$armedActionType")
 
+        // If SOS shake alerts are enabled, ignore flip gestures to avoid
+        // accidentally toggling actions (like flashlight) during an emergency shake.
+        val sosEnabled = try {
+            sosPreferences?.getConfig()?.enabled == true
+        } catch (e: Exception) {
+            Log.w(TAG, "Error reading SOS config", e)
+            false
+        }
+        if (sosEnabled) {
+            Log.d(TAG, "SOS enabled; ignoring gesture $gesture to prevent side effects")
+            return
+        }
+
         when (sessionState) {
             SessionState.IDLE -> {
                 // No action armed; ignore gestures
@@ -167,6 +197,23 @@ class GestureService : Service() {
                 }
             }
         }
+    }
+
+    private fun handleLongShakeForSos() {
+        val prefs = sosPreferences ?: return
+        val manager = sosManager ?: return
+        val config: SosConfig = prefs.getConfig()
+        if (!config.enabled) {
+            Log.d(TAG, "SOS is disabled; ignoring long shake")
+            return
+        }
+        if (!config.hasValidContacts()) {
+            Log.d(TAG, "SOS has no valid contacts; ignoring long shake")
+            return
+        }
+
+        Log.d(TAG, "Starting SOS flow for long shake")
+        manager.startSos(config)
     }
     
     private fun loadDefaultMappings() {

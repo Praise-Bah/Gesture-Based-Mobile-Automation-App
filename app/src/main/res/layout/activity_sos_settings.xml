@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    tools:context=".ui.SosSettingsActivity">
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SOS Shake Alerts"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Enable SOS alerts so that a long strong shake can send emergency SMS messages to your trusted contacts."
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/textTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Switch
+        android:id="@+id/switchEnableSos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enable SOS shake alerts"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/textDescription"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonSelectContacts"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Select SOS contacts (2–5)"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/switchEnableSos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textContacts"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="No SOS contacts selected (min 2, max 5)."
+        app:layout_constraintTop_toBottomOf="@id/buttonSelectContacts"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textMessageLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Custom SOS message"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/textContacts"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:gravity="top|start"
+        android:hint="Example: I am in trouble. Please help me. The first SMS will include a GPS link to my location."
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/textMessageLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/buttonSaveSos"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Save SOS settings"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/editMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
